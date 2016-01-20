@@ -1,0 +1,105 @@
+#set ($strLen = ${table.className.length()})
+#set ($lowerName = ${table.className.substring(0, 1).toLowerCase()}+${table.className.substring(1, $strLen)})
+package ${packageName}.service;
+
+import ${packageName}.domain.${table.className};
+import ${packageName}.entity.${table.className}Entity;
+import ${packageName}.repository.${table.className}Repository;
+import ${packageName}.request.${table.className}Request;
+import ${packageName}.response.${table.className}ListResponse;
+import ${packageName}.response.${table.className}Response;
+
+import com.jia.blossom.contract.util.BeanUtilsEx;
+import com.jia.blossom.contract.util.CriteriaInfo;
+import com.jia.core.platform.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+* Created by ${author} on ${dataString}
+*/
+@Service
+public class ${table.className}Service {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(${table.className}Service.class);
+
+    @Inject
+    ${table.className}Repository ${lowerName}Repository;
+
+    public ${table.className}Response get(Integer id) {
+        ${table.className}Response ${lowerName}Response = new ${table.className}Response();
+        ${table.className} ${lowerName} = new ${table.className}();
+        ${table.className}Entity ${lowerName}Entity = ${lowerName}Repository.findOneById(${table.className}Entity.class, id);
+        if (${lowerName}Entity == null) {
+            LOGGER.error("resource id={} is not found", id);
+            throw new ResourceNotFoundException("resource id=" + id + " is not found");
+        }
+        BeanUtilsEx.copyProperties(${lowerName}Entity, ${lowerName});
+        ${lowerName}Response.set${table.className}($lowerName);
+        return ${lowerName}Response;
+    }
+
+    public ${table.className}ListResponse list() {
+        return getAndBuild${table.className}ListResponse(null, null);
+    }
+
+    public ${table.className}ListResponse getAndBuild${table.className}ListResponse(Map<String, CriteriaInfo> filter, Map<String, String> orderByMap) {
+        ${table.className}ListResponse ${lowerName}ListResponse = new ${table.className}ListResponse();
+        List<${table.className}Entity> ${lowerName}EntityList = ${lowerName}Repository.findByAttributes(${table.className}Entity.class, filter, orderByMap);
+        List<${table.className}> resultList = new ArrayList<>();
+        for (${table.className}Entity entity : ${lowerName}EntityList) {
+            ${table.className} ${lowerName} = new ${table.className}();
+            BeanUtilsEx.copyProperties(entity, ${lowerName});
+            resultList.add(${lowerName});
+        }
+        //${lowerName}ListResponse.setTotalCount(${lowerName}Repository.findCountByAttributes(${table.className}Entity.class, filter));
+        ${lowerName}ListResponse.set${table.className}List(resultList);
+        return ${lowerName}ListResponse;
+    }
+
+    public ${table.className}ListResponse search(${table.className}Request request) {
+        Map<String, CriteriaInfo> filter = new HashMap<>();
+        //if (null != request && null != request.get${lowerName}()) {
+        //    ${table.className} ${lowerName} = request.get${table.className}();
+        //    if (StringUtils.hasText(${lowerName}.getCityName())) {
+        //        filter.put("cityName", new CriteriaInfo(CriteriaInfo.CriteriaType.equal, ${lowerName}.getCityName()));
+        //    }
+        //}
+
+        Map<String, String> orderByMap = new HashMap<>();
+        //orderByMap.put("arrivalTemplateStageId", "ASC");
+        //orderByMap.put("arrivalOffsetDays", "ASC");
+        return getAndBuild${table.className}ListResponse(filter, orderByMap);
+    }
+
+    @Transactional
+    public Integer create(${table.className}Request request) {
+        ${table.className}Entity ${lowerName}Entity = new ${table.className}Entity();
+        BeanUtilsEx.copyProperties(request.get${table.className}(), ${lowerName}Entity);
+        ${lowerName}Repository.create(${lowerName}Entity);
+        return ${lowerName}Entity.getId();
+    }
+
+    @Transactional
+    public void update(${table.className}Request request) {
+        ${table.className}Entity ${lowerName}Entity = ${lowerName}Repository.findOneById(${table.className}Entity.class, request.get${table.className}().getId());
+        BeanUtilsEx.copyProperties(request.get${table.className}(), ${lowerName}Entity);
+        ${lowerName}Entity.setUpdateDate(new Date());
+        ${lowerName}Repository.update(${lowerName}Entity);
+    }
+
+    @Transactional
+    public void delete(Integer id) {
+        ${lowerName}Repository.deleteById(${table.className}Entity.class, id);
+    }
+
+}

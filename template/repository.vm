@@ -1,0 +1,11 @@
+package ${packageName}.repository;
+
+import org.springframework.stereotype.Repository;
+
+/**
+* Created by ${author} on ${dataString}
+*/
+@Repository
+public class ${table.className}Repository extends CommonRepository {
+
+}
